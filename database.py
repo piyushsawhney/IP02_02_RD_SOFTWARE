@@ -39,7 +39,7 @@ def execute_select_query(query):
     return cur.fetchall()
 
 
-def execute_insert_query(dict, schema, table, conflict_column_name):
+def execute_upsert_query(dict, schema, table, conflict_column_name):
     statement = 'insert into ' + schema + '.' + table + ' (%s) values %s  ON CONFLICT' + f'({conflict_column_name}) DO UPDATE SET '
     columns = dict.keys()
     values = [dict[column] for column in columns]
@@ -53,6 +53,5 @@ def execute_insert_query(dict, schema, table, conflict_column_name):
         else:
             statement = statement + f"{column}={dict[column]},"
     statement = statement[:-1] + ";"
-    print(statement)
     cur.execute(statement, (AsIs(','.join(columns)), tuple(values)))
     conn.commit()

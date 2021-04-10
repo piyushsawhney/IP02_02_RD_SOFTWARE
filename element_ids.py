@@ -18,6 +18,17 @@ schedule_elements['search'] = 'CustomAgentRDAccountFG.ACCOUNT_NUMBER_FOR_SEARCH'
 schedule_elements['account_no_check_box'] = 'CustomAgentRDAccountFG.SELECT_INDEX_ARRAY'
 schedule_elements['save_accounts'] = 'Button26553257'
 
+schedule_elements['no_of_installment'] = 'CustomAgentRDAccountFG.RD_INSTALLMENT_NO'
+schedule_elements['rebate_default_button'] = 'Button22426525'
+schedule_elements['rebate'] = 'HREF_CustomAgentRDAccountFG.REBATE'
+schedule_elements['default'] = 'HREF_CustomAgentRDAccountFG.DEFAULT_FEE'
+schedule_elements['cheque_no'] = 'CustomAgentRDAccountFG.RD_CHEQUE_NO'
+schedule_elements['cheque_acc_no'] = 'CustomAgentRDAccountFG.RD_ACCOUNT_NUMBER_FOR_PAYMENT'
+schedule_elements['card_number_input'] = 'CustomAgentRDAccountFG.ASLAAS_NO'
+schedule_elements['save_modification'] = 'Button11874602'
+schedule_elements['modified_status'] = 'HREF_CustomAgentRDAccountFG.MODIFIED_ARRAY'
+
+
 
 schedule_update_elements = {}
 schedule_update_elements['account_no'] = 'HREF_CustomAgentRDAccountFG.ACCOUNT_NUMBER_ARRAY'

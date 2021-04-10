@@ -1,11 +1,16 @@
+import json
 from configparser import ConfigParser
 import datetime
 
 import psycopg2
 from psycopg2._psycopg import AsIs
 
+with open('config/db_config.json', "r") as json_file:
+    config_json = json.load(json_file)
+    SCHEMA = config_json['schema']
 
-def config(filename='', section='postgresql'):
+
+def config(filename='D:\SourceCode\\NewSourceCode\IP02_02_RD_SOFTWARE\config\desktop.ini', section='postgresql'):
     # create a parser
     parser = ConfigParser()
     # read config file
@@ -39,8 +44,15 @@ def execute_select_query(query):
     return cur.fetchall()
 
 
-def execute_upsert_query(dict, schema, table, conflict_column_name):
-    statement = 'insert into ' + schema + '.' + table + ' (%s) values %s  ON CONFLICT' + f'({conflict_column_name}) DO UPDATE SET '
+def execute_conditional_upsert(table, account_no, cardNumber):
+    statement = "update " + SCHEMA + "." + table + f" set card_number = '{cardNumber}' where account_no = " + f"'{account_no}';"
+    print(statement)
+    cur.execute(statement)
+    conn.commit()
+
+
+def execute_upsert_query(dict, table, conflict_column_name):
+    statement = 'insert into ' + SCHEMA + '.' + table + ' (%s) values %s  ON CONFLICT' + f'({conflict_column_name}) DO UPDATE SET '
     columns = dict.keys()
     values = [dict[column] for column in columns]
     for column in columns:

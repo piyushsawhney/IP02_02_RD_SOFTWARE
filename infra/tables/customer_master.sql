@@ -5,8 +5,8 @@ begin
 execute format(
 'CREATE TABLE IF NOT EXISTS %I.%I(
    account_no varchar(12) PRIMARY KEY,
-   investor_name varchar,
-   account_opening_date date,
+   investor_name varchar NOT NULL,
+   account_opening_date date NOT NULL,
    denomination numeric,
    total_deposit_amount numeric,
    total_months_paid smallint,
@@ -20,6 +20,14 @@ execute format(
    new_card_number varchar(9),
    is_extended boolean
 )',
+  schema_name_variable, client_table_variable
+);
+execute format(
+'ALTER TABLE %I.%I ALTER COLUMN card_number TYPE varchar;',
+  schema_name_variable, client_table_variable
+);
+execute format(
+'ALTER TABLE %I.%I ALTER COLUMN new_card_number TYPE varchar;',
   schema_name_variable, client_table_variable
 );
 end $$ language plpgsql;

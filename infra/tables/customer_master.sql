@@ -16,18 +16,11 @@ execute format(
    default_fee numeric,
    default_installments smallint,
    pending_installments smallint,
-   card_number varchar(9),
-   new_card_number varchar(9),
-   is_extended boolean
+   card_number varchar,
+   new_card_number varchar,
+   is_extended boolean,
+   bank_account_no varchar(20)
 )',
-  schema_name_variable, client_table_variable
-);
-execute format(
-'ALTER TABLE %I.%I ALTER COLUMN card_number TYPE varchar;',
-  schema_name_variable, client_table_variable
-);
-execute format(
-'ALTER TABLE %I.%I ALTER COLUMN new_card_number TYPE varchar;',
   schema_name_variable, client_table_variable
 );
 end $$ language plpgsql;

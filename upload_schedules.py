@@ -6,8 +6,9 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 import driver
 import element_ids as IDs
-import xpaths as xPaths
+import xpaths
 from common_scenarios import LoginPage
+from database import update_query
 
 with open('config/selenium_config.json', "r") as json_file:
     config_json = json.load(json_file)
@@ -30,21 +31,27 @@ def select_account_and_add_to_schedule(schedule_details, schedule_type):
         navigate_to_account()
     number_of_accounts = len(schedule_details)
     account_nos = ','.join(schedule_details.keys())
-    driver.Instance.find_element_by_xpath(xPaths.schedule_xpath[schedule_type]).click()
+    driver.Instance.find_element_by_xpath(xpaths.schedule_xpath[schedule_type]).click()
     account_no_search_element = driver.Instance.find_element_by_id(IDs.schedule_elements['search'])
     account_no_search_element.clear()
     account_no_search_element.send_keys(account_nos)
     driver.Instance.find_element_by_id(IDs.navigation_elements['fetch']).click()
-    for i in range(number_of_accounts):
-        element_id = IDs.schedule_elements['account_no_check_box'] + f"[{i}]"
+    for i in range(1, number_of_accounts + 1):
+        element_id = IDs.schedule_elements['account_no_check_box'] + f"[{i - 1}]"
         driver.Instance.find_element_by_id(element_id).click()
+        if not i == 0 and i % 10 == 0:
+            driver.Instance.find_element_by_id(IDs.navigation_elements['next_select_account']).click()
+
     driver.Instance.find_element_by_id(IDs.schedule_elements['save_accounts']).click()
 
     for i in range(number_of_accounts):
+
+        short_waits = WebDriverWait(driver.Instance, 10, poll_frequency=1)
         element_id_string = IDs.schedule_update_elements['account_no'] + f"[{i}]"
-        account_no = driver.Instance.find_element_by_id(element_id_string).text.strip()
+        account_no = short_waits.until(EC.presence_of_element_located((By.ID, element_id_string))).text.strip()
+        # account_no = driver.Instance.find_element_by_id(element_id_string).text.strip()
         assert account_no in schedule_details.keys()
-        radio_button_xpath = xPaths.account_details['radio_button'].replace("{value}", str(i))
+        radio_button_xpath = xpaths.account_details['radio_button'].replace("{value}", str(i))
         driver.Instance.find_element_by_xpath(radio_button_xpath).click()
         # schedule details entering
         no_of_installment_element = driver.Instance.find_element_by_id(IDs.schedule_elements['no_of_installment'])
@@ -52,14 +59,12 @@ def select_account_and_add_to_schedule(schedule_details, schedule_type):
         no_of_installment_element.send_keys(
             schedule_details[account_no]['no_of_installment'])
         driver.Instance.find_element_by_id(IDs.schedule_elements['rebate_default_button']).click()
-        short_waits = WebDriverWait(driver.Instance, 10, poll_frequency=1)
 
         rebate_element = short_waits.until(EC.presence_of_element_located((By.ID, IDs.schedule_elements['rebate'])))
         default_element = short_waits.until(EC.presence_of_element_located((By.ID, IDs.schedule_elements['default'])))
-        rebate = rebate_element.text.strip()
-        default_fee = default_element.text.strip()
-        print("Rebate ", rebate)
-        print("Default ", default_fee)
+        rebate_default_dict = {'rebate': rebate_element.text.strip(), 'default_fee': default_element.text.strip()}
+        account_no_dict = {'account_no': account_no}
+        update_query("transaction", rebate_default_dict, account_no_dict)
         card_number_element = driver.Instance.find_element_by_id(IDs.schedule_elements['card_number_input'])
         card_number_element.clear()
         card_number_element.send_keys(
@@ -76,6 +81,30 @@ def select_account_and_add_to_schedule(schedule_details, schedule_type):
                 schedule_details[account_no]['cheque_acc_no'])
         driver.Instance.find_element_by_id(IDs.schedule_elements['save_modification']).click()
 
-    for i in range(number_of_accounts):
-        element_id_string = IDs.schedule_elements['modified_status'] + f"[{i}]"
-        assert driver.Instance.find_element_by_id(element_id_string).text.strip().lower() == 'yes'
+        page_to_go = int(((i + 1) / 10) + 1)
+        if i == 9:
+            element_id_string = IDs.schedule_elements['modified_status'] + f"[{i}]"
+            assert driver.Instance.find_element_by_id(element_id_string).text.strip().lower() == 'yes'
+            driver.Instance.find_element_by_id(IDs.navigation_elements['add_account_page_number']).send_keys(
+                str(page_to_go))
+            # short_waits.until(EC.element_to_be_clickable((By.ID, IDs.navigation_elements['add_account_go']))).click()
+            driver.Instance.find_element_by_id(IDs.navigation_elements['add_account_go']).click()
+        elif i > 9:
+            driver.Instance.find_element_by_id(IDs.navigation_elements['add_account_page_number']).send_keys(
+                str(page_to_go))
+            # short_waits.until(EC.element_to_be_clickable((By.ID, IDs.navigation_elements['add_account_go']))).click()
+            driver.Instance.find_element_by_id(IDs.navigation_elements['add_account_go']).click()
+            element_id_string = IDs.schedule_elements['modified_status'] + f"[{i}]"
+            assert driver.Instance.find_element_by_id(element_id_string).text.strip().lower() == 'yes'
+        else:
+            element_id_string = IDs.schedule_elements['modified_status'] + f"[{i}]"
+            assert driver.Instance.find_element_by_id(element_id_string).text.strip().lower() == 'yes'
+    # input("Do You want to continue")
+    # driver.Instance.find_element_by_id(IDs.schedule_elements['pay_schedule']).click()
+    # ref_no_text = driver.Instance.find_element_by_xpath(xpaths.schedule_xpath['reference_no']).text.strip()
+    # print(ref_no_text)
+    # reference_no = ref_no_text.split(".")[1]
+    # reference_no = reference_no[reference_no.rindex(" "):].strip()
+    # print(reference_no)
+    reference_no = input("Enter Reference Number : ")
+    return reference_no

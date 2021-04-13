@@ -3,19 +3,19 @@ import json
 
 import driver
 from common_scenarios import LoginPage
-from database import execute_select_query
+from database import execute_select_query, update_query
 from upload_schedules import select_account_and_add_to_schedule
 
 with open('config/db_config.json', "r") as json_file:
     config_json = json.load(json_file)
     SCHEMA = config_json['schema']
 
-CASH_SCHEDULE = f"select count(DISTINCT schedule_group) from {SCHEMA}.rd_account_transactions where rd_date = '(day)-(month-(year)' and is_cash = True"
-CHEQUE_SCHEDULE = f"select count(DISTINCT schedule_group) from {SCHEMA}.rd_account_transactions where rd_date = '(day)-(month-(year)' and is_cash = False"
+CASH_SCHEDULE = f"select count(DISTINCT schedule_group) from {SCHEMA}.rd_account_transactions where rd_date = '(date)' and is_cash = True;"
+CHEQUE_SCHEDULE = f"select count(DISTINCT schedule_group) from {SCHEMA}.rd_account_transactions where rd_date = '(date)' and is_cash = False;"
 
 CASH_SCHEDULE_DETAILS = "select " \
                         "t.account_no," \
-                        "t.investor_name," \
+                        "m.investor_name," \
                         "t.no_of_installments," \
                         "t.rd_date," \
                         "case " \
@@ -24,22 +24,24 @@ CASH_SCHEDULE_DETAILS = "select " \
                         f"{SCHEMA}.rd_account_transactions t, {SCHEMA}.rd_master m " \
                         "where t.account_no = m.account_no and " \
                         "t.schedule_group = (scheduleGroup) and " \
-                        "t.is_cash = True and t.schedule_number IS NULL;"
+                        "t.is_cash = True and t.schedule_number IS NULL " \
+                        "ORDER BY t.account_no;"
 
 CHEQUE_SCHEDULE_DETAILS = "select " \
                           "t.account_no," \
-                          "t.investor_name," \
+                          "m.investor_name," \
                           "t.no_of_installments," \
                           "t.rd_date," \
                           "case " \
                           "when m.is_extended = true then m.new_card_number else card_number end as card_number," \
                           "t.cheque_number," \
-                          "t.bank_account_no" \
+                          "m.bank_account_no" \
                           " from " \
                           f"{SCHEMA}.rd_account_transactions t, {SCHEMA}.rd_master m " \
                           "where t.account_no = m.account_no and " \
                           "t.schedule_group = (scheduleGroup) and " \
-                          "t.is_cash = False and t.schedule_number IS NULL;"
+                          "t.is_cash = False and t.schedule_number IS NULL " \
+                          "ORDER BY t.cheque_number;"
 
 
 def create_account_dictionary(schedule_transactions, schedule):
@@ -52,8 +54,8 @@ def create_account_dictionary(schedule_transactions, schedule):
     return schedule_transactions
 
 
-def create_cash_schedules(day, month, year):
-    statement = CASH_SCHEDULE.replace("(day)-(month-(year)", f"{day}-{month}-{year}")
+def create_cash_schedules(date):
+    statement = CASH_SCHEDULE.replace("(date)", str(date))
     total_schedules = execute_select_query(statement)[0][0]
     for i in range(1, total_schedules + 1):
         statement = CASH_SCHEDULE_DETAILS.replace("(scheduleGroup)", f"{i}")
@@ -61,11 +63,14 @@ def create_cash_schedules(day, month, year):
         schedule_transactions = {}
         for schedule in accounts_in_schedule:
             schedule_transactions = create_account_dictionary(schedule_transactions, schedule)
-        select_account_and_add_to_schedule(schedule_transactions, "cash")
+        schedule_reference = select_account_and_add_to_schedule(schedule_transactions, "cash")
+        schedule_reference_dict = {"schedule_number": schedule_reference, "schedule_date": str(datetime.date.today())}
+        for schedule in accounts_in_schedule:
+            update_query("transaction", schedule_reference_dict, {"account_no": schedule[0]})
 
 
-def create_cheque_schedules(day, month, year):
-    statement = CHEQUE_SCHEDULE.replace("(day)-(month-(year)", f"{day}-{month}-{year}")
+def create_cheque_schedules(date):
+    statement = CHEQUE_SCHEDULE.replace("(date)", str(date))
     total_schedules = execute_select_query(statement)[0][0]
     print(total_schedules)
     for i in range(1, total_schedules + 1):
@@ -74,7 +79,10 @@ def create_cheque_schedules(day, month, year):
         schedule_transactions = {}
         for schedule in accounts_in_schedule:
             schedule_transactions = create_account_dictionary(schedule_transactions, schedule)
-        select_account_and_add_to_schedule(schedule_transactions, "cheque")
+        schedule_reference = select_account_and_add_to_schedule(schedule_transactions, "cheque")
+        schedule_reference_dict = {"schedule_number": schedule_reference, "schedule_date": str(datetime.date.today())}
+        for schedule in accounts_in_schedule:
+            update_query("transaction", schedule_reference_dict, {"account_no": schedule[0]})
 
 
 def perform_logout():
@@ -86,9 +94,11 @@ def perform_logout():
 if __name__ == '__main__':
     today_date = datetime.date.today()
     if today_date.day <= 15:
-        create_cash_schedules(1, today_date.month, today_date.year)
-        # create_cheque_schedules(1, today_date.month, today_date.year)
+        date = datetime.date(today_date.year, today_date.month, 1)
+        # create_cash_schedules(date)
+        create_cheque_schedules(date)
     else:
-        create_cash_schedules(16, today_date.month, today_date.year)
-        # create_cheque_schedules(16, today_date.month, today_date.year)
+        date = datetime.date(today_date.year, today_date.month, 16)
+        create_cash_schedules(date)
+        create_cheque_schedules(date)
     # perform_logout()

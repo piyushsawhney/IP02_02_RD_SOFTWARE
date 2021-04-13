@@ -10,7 +10,7 @@ with open('config/db_config.json', "r") as json_file:
     SCHEMA = config_json['schema']
 
 
-def config(filename='D:\SourceCode\\NewSourceCode\IP02_02_RD_SOFTWARE\config\desktop.ini', section='postgresql'):
+def config(filename='config/desktop.ini', section='postgresql'):
     # create a parser
     parser = ConfigParser()
     # read config file
@@ -44,9 +44,22 @@ def execute_select_query(query):
     return cur.fetchall()
 
 
-def execute_conditional_upsert(table, account_no, cardNumber):
-    statement = "update " + SCHEMA + "." + table + f" set card_number = '{cardNumber}' where account_no = " + f"'{account_no}';"
-    print(statement)
+def execute_select_distinct_query(table_type, attribute_list, condition=None):
+    attributes = ','.join(attribute_list)
+    if condition:
+        condition_str = ','.join("{!s}={!r}".format(k, v) for (k, v) in condition.items())
+    statement = f"select DISTINCT {attributes} from {SCHEMA}.{config_json[table_type]}" + (
+        f" where {condition_str}" if condition is not None else "") + ";"
+    cur.execute(statement)
+    return cur.fetchall()
+
+
+def update_query(table_type, update_dict, condition=None):
+    statement = "update " + SCHEMA + "." + config_json[table_type] + f" set "
+    update_values_str = ','.join("{!s}={!r}".format(k, v) for (k, v) in update_dict.items())
+    if condition:
+        condition_str = ','.join("{!s}={!r}".format(k, v) for (k, v) in condition.items())
+    statement = statement + update_values_str + " where " + condition_str if condition is not None else "" + ";"
     cur.execute(statement)
     conn.commit()
 

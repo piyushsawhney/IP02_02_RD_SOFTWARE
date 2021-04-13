@@ -94,10 +94,9 @@ def get_account_details():
             driver.Instance.find_element_by_id(IDs.navigation_elements['back_button']).click()
             start = start + 1
         counter = start
-        back_button = driver.Instance.find_element_by_id(IDs.navigation_elements['page_next'])
-
-        if back_button.is_enabled():
-            back_button.click()
+        next_button = driver.Instance.find_element_by_id(IDs.navigation_elements['page_next'])
+        if next_button.is_enabled():
+            next_button.click()
         else:
             break
 

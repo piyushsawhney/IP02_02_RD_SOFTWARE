@@ -9,7 +9,6 @@ execute format(
    is_cash boolean,
    no_of_installments smallint,
    cheque_number varchar(6),
-   bank_account_no varchar,
    loan_amount numeric,
    loan_interest numeric,
    schedule_group smallint,
@@ -17,7 +16,7 @@ execute format(
    default_fee numeric,
    schedule_date date,
    schedule_number varchar(12),
-   CONSTRAINT cheque_schedule CHECK ((is_cash = False and cheque_number IS NOT NULL AND bank_account_no IS NOT NULL) OR is_cash = True),
+   CONSTRAINT cheque_schedule CHECK ((is_cash = False and cheque_number IS NOT NULL) OR is_cash = True),
    PRIMARY KEY (rd_date, account_no),
    CONSTRAINT fk_account_no
       FOREIGN KEY(account_no)

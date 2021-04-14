@@ -82,6 +82,6 @@ if __name__ == '__main__':
     perform_login()
     navigate_to_reports()
     for schedule_number in schedule_list:
-        search_schedule(schedule_number, "01-Mar-2021")
+        search_schedule(schedule_number, date)
         download_excel()
     perform_logout()

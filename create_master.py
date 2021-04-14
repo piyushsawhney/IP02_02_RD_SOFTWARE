@@ -12,7 +12,7 @@ with open('config/selenium_config.json', "r") as json_file:
     URL = config_json['dop_login_url']
 with open('config/db_config.json', "r") as json_file:
     config_json = json.load(json_file)
-    table = config_json['master_table_name']
+    table = config_json['master']
 
 
 def update_to_db(my_dict):

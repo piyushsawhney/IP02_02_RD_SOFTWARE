@@ -95,10 +95,10 @@ if __name__ == '__main__':
     today_date = datetime.date.today()
     if today_date.day <= 15:
         date = datetime.date(today_date.year, today_date.month, 1)
-        # create_cash_schedules(date)
+        create_cash_schedules(date)
         create_cheque_schedules(date)
     else:
         date = datetime.date(today_date.year, today_date.month, 16)
         create_cash_schedules(date)
         create_cheque_schedules(date)
-    # perform_logout()
+    perform_logout()

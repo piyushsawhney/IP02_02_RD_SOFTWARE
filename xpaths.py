@@ -9,6 +9,7 @@ account_details['table_rows'] = "//table[@id='SummaryList']/tbody/tr"
 account_details['listing_table_rows'] = "//table[@id='CustomAgentRDAccountFG.RD_ACCOUNT_NUMBER_FOR_PAYMENT']/tbody/tr"
 account_details['radio_button'] = "//input[@id='CustomAgentRDAccountFG.SELECTED_INDEX' and @value='{value}']"
 
-
 list_download = {}
-list_download['output_format']  = "//select[@id='CustomAgentRDAccountFG.OUTFORMAT']/option[@value='4' or text()='XLS file']"
+list_download[
+    'output_format'] = "//select[@id='CustomAgentRDAccountFG.OUTFORMAT']/option[@value='4' or text()='XLS file']"
+list_download['block_ui'] = "//div[@class='blockUI blockOverlay']"

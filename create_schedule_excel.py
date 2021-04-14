@@ -67,7 +67,7 @@ def create_workbook(type, date):
         ws.append(
             ("Account_No", "Name", "No Of Installment", "RD Date", "Amount", "Card Number", "Cheque Number",
              "Account Number"))
-    file_name_str = f'{type}_{str(date)}.xlsx'
+    file_name_str = f'{str(date)}_{type}.xlsx'
     update_file_name(file_name_str)
     wb.save(file_name_str)
 
@@ -126,7 +126,8 @@ if __name__ == '__main__':
         create_workbook("cheque", date)
         create_cheque_schedules(date)
     else:
-        create_workbook("cash", 16, today_date.month, today_date.year)
-        create_cash_schedules(16, today_date.month, today_date.year)
-        create_workbook("cheque", 16, today_date.month, today_date.year)
-        create_cheque_schedules(16, today_date.month, today_date.year)
+        date = datetime.date(today_date.year, today_date.month, 16)
+        create_workbook("cash", date)
+        create_cash_schedules(date)
+        create_workbook("cheque", date)
+        create_cheque_schedules(date)

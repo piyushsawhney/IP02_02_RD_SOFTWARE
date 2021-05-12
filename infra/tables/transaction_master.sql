@@ -1,5 +1,5 @@
 do $$ declare
-schema_name_variable constant varchar := 'test';
+schema_name_variable constant varchar := 'knaps';
 client_table_variable constant varchar := 'rd_account_transactions';
 begin
 execute format(

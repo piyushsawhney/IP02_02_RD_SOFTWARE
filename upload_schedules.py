@@ -77,8 +77,10 @@ def navigate_to_page(page_number):
 
 
 def submit_schedule():
+    short_waits = WebDriverWait(driver.Instance, 10, poll_frequency=1)
     driver.Instance.find_element_by_id(IDs.schedule_elements['pay_schedule']).click()
-    ref_no_text = driver.Instance.find_element_by_xpath(xpaths.schedule_xpath['reference_no']).text.strip()
+    ref_no_text = short_waits.until(
+        EC.presence_of_element_located((By.XPATH, xpaths.schedule_xpath['reference_no']))).text.strip()
     print(ref_no_text)
     reference_no = ref_no_text.split(".")[1]
     reference_no = reference_no[reference_no.rindex(" "):].strip()
@@ -108,41 +110,31 @@ def select_account_and_add_to_schedule(schedule_details, schedule_type):
         driver.Instance.find_element_by_xpath(radio_button_xpath).click()
 
         get_and_update_rebate_and_default_fee(account_no, schedule_details[account_no]['no_of_installment'])
-
+        cheque_no = schedule_details[account_no]['cheque_no'] if 'cheque_no' in schedule_details[
+            account_no].keys() else None
+        cheque_acc_no = schedule_details[account_no]['cheque_acc_no'] if 'cheque_acc_no' in schedule_details[
+            account_no].keys() else None
         add_details_for_transaction(schedule_details[account_no]['card_number'], schedule_type,
-                                    schedule_details[account_no]['cheque_no'],
-                                    schedule_details[account_no]['cheque_acc_no'])
+                                    cheque_no,
+                                    cheque_acc_no)
 
         driver.Instance.find_element_by_id(IDs.schedule_elements['save_modification']).click()
 
         page_to_go = int(((i + 1) / 10) + 1)
+
+        element_id_string = IDs.schedule_elements['modified_status'] + f"[{i}]"
         if i <= 9:
-            element_id_string = IDs.schedule_elements['modified_status'] + f"[{i}]"
-            assert driver.Instance.find_element_by_id(element_id_string).text.strip().lower() == 'yes'
+            assert short_waits.until(
+                EC.presence_of_element_located((By.ID, element_id_string))).text.strip().lower() == 'yes'
             if i == 9:
                 navigate_to_page(page_to_go)
+        elif i % 10 == 9:
+            navigate_to_page(page_to_go - 1)
+            assert short_waits.until(
+                EC.presence_of_element_located((By.ID, element_id_string))).text.strip().lower() == 'yes'
+            navigate_to_page(page_to_go)
         else:
             navigate_to_page(page_to_go)
-            element_id_string = IDs.schedule_elements['modified_status'] + f"[{i}]"
-            assert driver.Instance.find_element_by_id(element_id_string).text.strip().lower() == 'yes'
-
-        # if i == 9:
-        #
-        #     driver.Instance.find_element_by_id(IDs.navigation_elements['add_account_page_number']).send_keys(
-        #         str(page_to_go))
-        #     # short_waits.until(EC.element_to_be_clickable((By.ID, IDs.navigation_elements['add_account_go']))).click()
-        #     driver.Instance.find_element_by_id(IDs.navigation_elements['add_account_go']).click()
-        # elif i > 9:
-        #     driver.Instance.find_element_by_id(IDs.navigation_elements['add_account_page_number']).send_keys(
-        #         str(page_to_go))
-        #     # short_waits.until(EC.element_to_be_clickable((By.ID, IDs.navigation_elements['add_account_go']))).click()
-        #     driver.Instance.find_element_by_id(IDs.navigation_elements['add_account_go']).click()
-        #
-        # else:
-        #     element_id_string = IDs.schedule_elements['modified_status'] + f"[{i}]"
-        #     assert driver.Instance.find_element_by_id(element_id_string).text.strip().lower() == 'yes'
-
-    input("Do You want to continue")
-    # reference_no = submit_schedule()
-    reference_no = input("Enter Reference Number : ")
-    return reference_no
+            assert short_waits.until(
+                EC.presence_of_element_located((By.ID, element_id_string))).text.strip().lower() == 'yes'
+    return submit_schedule()

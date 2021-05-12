@@ -10,8 +10,8 @@ with open('config/db_config.json', "r") as json_file:
     config_json = json.load(json_file)
     SCHEMA = config_json['schema']
 
-CASH_SCHEDULE = f"select count(DISTINCT schedule_group) from {SCHEMA}.rd_account_transactions where rd_date = '(date)' and is_cash = True;"
-CHEQUE_SCHEDULE = f"select count(DISTINCT schedule_group) from {SCHEMA}.rd_account_transactions where rd_date = '(date)' and is_cash = False;"
+CASH_SCHEDULE = f"select DISTINCT schedule_group from {SCHEMA}.rd_account_transactions where rd_date = '(date)' and is_cash = True and schedule_number is NULL;"
+CHEQUE_SCHEDULE = f"select DISTINCT schedule_group from {SCHEMA}.rd_account_transactions where rd_date = '(date)' and is_cash = False and schedule_number is NULL;"
 
 CASH_SCHEDULE_DETAILS = "select " \
                         "t.account_no," \
@@ -56,8 +56,10 @@ def create_account_dictionary(schedule_transactions, schedule):
 
 def create_cash_schedules(date):
     statement = CASH_SCHEDULE.replace("(date)", str(date))
-    total_schedules = execute_select_query(statement)[0][0]
-    for i in range(1, total_schedules + 1):
+    total_schedules = execute_select_query(statement)
+    output = [item for t in total_schedules for item in t]
+    output.sort()
+    for i in output:
         statement = CASH_SCHEDULE_DETAILS.replace("(scheduleGroup)", f"{i}")
         accounts_in_schedule = execute_select_query(statement)
         schedule_transactions = {}
@@ -71,9 +73,10 @@ def create_cash_schedules(date):
 
 def create_cheque_schedules(date):
     statement = CHEQUE_SCHEDULE.replace("(date)", str(date))
-    total_schedules = execute_select_query(statement)[0][0]
-    print(total_schedules)
-    for i in range(1, total_schedules + 1):
+    total_schedules = execute_select_query(statement)
+    output = [item for t in total_schedules for item in t]
+    output.sort()
+    for i in output:
         statement = CHEQUE_SCHEDULE_DETAILS.replace("(scheduleGroup)", f"{i}")
         accounts_in_schedule = execute_select_query(statement)
         schedule_transactions = {}

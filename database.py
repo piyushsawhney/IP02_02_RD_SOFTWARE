@@ -1,6 +1,6 @@
+import datetime
 import json
 from configparser import ConfigParser
-import datetime
 
 import psycopg2
 from psycopg2._psycopg import AsIs
@@ -79,4 +79,13 @@ def execute_upsert_query(dict, table, conflict_column_name):
             statement = statement + f"{column}={dict[column]},"
     statement = statement[:-1] + ";"
     cur.execute(statement, (AsIs(','.join(columns)), tuple(values)))
+    conn.commit()
+
+
+def execute_insert_query(table_type, insert_dict):
+    statement = 'insert into ' + SCHEMA + '.' + config_json[table_type] + ' (%s) values %s  ON CONFLICT DO NOTHING;'
+    columns = insert_dict.keys()
+    values = [insert_dict[column] for column in columns]
+    cur.execute(statement, (AsIs(','.join(columns)), tuple(values)))
+    # print(cur.mogrify(statement, (AsIs(','.join(columns)), tuple(values))))
     conn.commit()

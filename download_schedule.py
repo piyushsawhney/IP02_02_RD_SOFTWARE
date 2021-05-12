@@ -1,10 +1,7 @@
+import datetime
 import json
 import time
-import datetime
 
-import win32com.client as win32
-from openpyxl import Workbook
-from openpyxl.drawing.image import Image
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
@@ -45,8 +42,8 @@ def navigate_to_reports():
     LoginPage.navigate_to_reports()
 
 
-def get_schedule_details_from_db(schedule_number):
-    return execute_select_distinct_query("transaction", ["schedule_date"], {"schedule_number": schedule_number})[0]
+def get_schedule_details_from_db(schedule_date):
+    return execute_select_distinct_query("transaction", ["schedule_number"], {"schedule_date": schedule_date})
 
 
 def search_schedule(schedule_number, start_date, end_date=None):
@@ -76,12 +73,13 @@ def download_excel():
 
 
 if __name__ == '__main__':
-    schedule_list = []
     today_date = datetime.date.today()
-    date = datetime.date(today_date.year, today_date.month, 1).strftime("%d-%b-%Y")
+    date = datetime.date(today_date.year, today_date.month, 16).strftime("%d-%b-%Y")
+    schedule_list = get_schedule_details_from_db(str(datetime.date.today()))
+    print(schedule_list)
     perform_login()
     navigate_to_reports()
     for schedule_number in schedule_list:
-        search_schedule(schedule_number, date)
+        search_schedule(schedule_number[0], date)
         download_excel()
     perform_logout()

@@ -142,7 +142,7 @@ def finish_workbook():
 
 if __name__ == '__main__':
     today_date = datetime.date.today()
-    date = '2021-04-01'
+    date = '2021-04-16'
     create_workbook("cash", date)
     create_cash_schedules(date)
     finish_workbook()

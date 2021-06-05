@@ -17,6 +17,8 @@ with open('config/db_config.json', "r") as json_file:
 
 def update_to_db(my_dict):
     database.execute_upsert_query(my_dict, table, "account_no")
+    if my_dict['next_installment_date'] is None:
+        database.update_null('master', ['next_installment_date'], {"account_no": my_dict['account_no']})
 
 
 def perform_login():
@@ -49,6 +51,7 @@ def create_row(driver):
         IDs.account_details['month_paid_upto']).text
     my_dict['next_installment_date'] = driver.Instance.find_element_by_id(
         IDs.account_details['next_installment_date']).text
+
     my_dict['last_deposit_date'] = driver.Instance.find_element_by_id(
         IDs.account_details['last_date_of_deposit']).text
     my_dict['rebate_paid'] = driver.Instance.find_element_by_id(IDs.account_details['rebate']).text

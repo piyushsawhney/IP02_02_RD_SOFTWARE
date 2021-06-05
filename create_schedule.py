@@ -10,8 +10,8 @@ with open('config/db_config.json', "r") as json_file:
     config_json = json.load(json_file)
     SCHEMA = config_json['schema']
 
-CASH_SCHEDULE = f"select DISTINCT schedule_group from {SCHEMA}.rd_account_transactions where rd_date = '(date)' and is_cash = True and schedule_number is NULL;"
-CHEQUE_SCHEDULE = f"select DISTINCT schedule_group from {SCHEMA}.rd_account_transactions where rd_date = '(date)' and is_cash = False and schedule_number is NULL;"
+CASH_SCHEDULE = f"select DISTINCT schedule_group from {SCHEMA}.rd_account_transactions where rd_date = '(date)' and is_cash = True and schedule_number is NULL and schedule_group is NOT NULL;"
+CHEQUE_SCHEDULE = f"select DISTINCT schedule_group from {SCHEMA}.rd_account_transactions where rd_date = '(date)' and is_cash = False and schedule_number is NULL and schedule_group is NOT NULL;"
 
 CASH_SCHEDULE_DETAILS = "select " \
                         "t.account_no," \

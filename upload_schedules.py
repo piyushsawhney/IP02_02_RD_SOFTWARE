@@ -37,7 +37,7 @@ def select_accounts(number_of_accounts):
     for i in range(1, number_of_accounts + 1):
         element_id = IDs.schedule_elements['account_no_check_box'] + f"[{i - 1}]"
         driver.Instance.find_element_by_id(element_id).click()
-        if not i == 0 and i % 10 == 0:
+        if not i == 0 and i % 10 == 0 and number_of_accounts != 10:
             driver.Instance.find_element_by_id(IDs.navigation_elements['next_select_account']).click()
 
     driver.Instance.find_element_by_id(IDs.schedule_elements['save_accounts']).click()
@@ -126,7 +126,7 @@ def select_account_and_add_to_schedule(schedule_details, schedule_type):
         if i <= 9:
             assert short_waits.until(
                 EC.presence_of_element_located((By.ID, element_id_string))).text.strip().lower() == 'yes'
-            if i == 9:
+            if i == 9 and number_of_accounts != 10:
                 navigate_to_page(page_to_go)
         elif i % 10 == 9:
             navigate_to_page(page_to_go - 1)

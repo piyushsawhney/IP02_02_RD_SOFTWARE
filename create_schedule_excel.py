@@ -9,8 +9,8 @@ with open('config/db_config.json', "r") as json_file:
     config_json = json.load(json_file)
     SCHEMA = config_json['schema']
 
-CASH_SCHEDULE = f"select DISTINCT schedule_group from {SCHEMA}.rd_account_transactions where rd_date = '(date)' and is_cash = True and schedule_number is NULL;"
-CHEQUE_SCHEDULE = f"select DISTINCT schedule_group from {SCHEMA}.rd_account_transactions where rd_date = '(date)' and is_cash = False and schedule_number is NULL;"
+CASH_SCHEDULE = f"select DISTINCT schedule_group from {SCHEMA}.rd_account_transactions where rd_date = '(date)' and is_cash = True and schedule_number is NULL and schedule_group is NOT NULL;"
+CHEQUE_SCHEDULE = f"select DISTINCT schedule_group from {SCHEMA}.rd_account_transactions where rd_date = '(date)' and is_cash = False and schedule_number is NULL and schedule_group is NOT NULL;"
 
 CASH_SCHEDULE_DETAILS = "select " \
                         "t.account_no," \
@@ -78,7 +78,7 @@ def create_header(ws, type):
         ws.append(("Account_No", "Name", "No Of Installment", "Amount", "RD Date", "Card Number",
                    "MonthsPaid", "Last Date", "Next Date"))
     else:
-        ws.append(("Account_No", "Name", "No Of Installment", "RD Date", "Amount", "Card Number", "Cheque Number",
+        ws.append(("Account_No", "Name", "No Of Installment",  "Amount","RD Date", "Card Number", "Cheque Number",
                    "Account Number", "MonthsPaid", "Last Date", "Next Date"))
 
 

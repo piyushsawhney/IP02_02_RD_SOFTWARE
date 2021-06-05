@@ -82,7 +82,20 @@ def execute_upsert_query(dict, table, conflict_column_name):
     conn.commit()
 
 
-def execute_insert_query(table_type, insert_dict):
+def update_null(table_type, column_list, condition):
+    statement = "update " + SCHEMA + "." + config_json[table_type] + f" set "
+    for column in column_list:
+        statement = statement + column + "=NULL,"
+    statement = statement[:-1]
+    if condition:
+        condition_str = ','.join("{!s}={!r}".format(k, v) for (k, v) in condition.items())
+        statement = statement + " where " + condition_str
+    statement = statement + ";"
+    cur.execute(statement)
+    conn.commit()
+
+
+def  execute_insert_query(table_type, insert_dict):
     statement = 'insert into ' + SCHEMA + '.' + config_json[table_type] + ' (%s) values %s  ON CONFLICT DO NOTHING;'
     columns = insert_dict.keys()
     values = [insert_dict[column] for column in columns]

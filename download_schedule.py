@@ -76,9 +76,9 @@ if __name__ == '__main__':
     today_date = datetime.date.today()
     date = datetime.date(today_date.year, today_date.month, 16).strftime("%d-%b-%Y")
     schedule_list = get_schedule_details_from_db(str(datetime.date.today()))
-    print(schedule_list)
     perform_login()
     navigate_to_reports()
+    # schedule_list = [(' ',), (' ',)]
     for schedule_number in schedule_list:
         search_schedule(schedule_number[0], date)
         download_excel()

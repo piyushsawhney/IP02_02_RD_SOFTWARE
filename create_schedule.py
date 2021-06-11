@@ -96,12 +96,17 @@ def perform_logout():
 
 if __name__ == '__main__':
     today_date = datetime.date.today()
+    choice = input("Enter Choice \n1. Only Cash\n2. Only Cheque\n3. Both Cash and Cheque\n")
     if today_date.day <= 15:
         date = datetime.date(today_date.year, today_date.month, 1)
-        create_cash_schedules(date)
-        create_cheque_schedules(date)
+        if choice == '1' or choice == '3':
+            create_cash_schedules(date)
+        if choice == '2' or choice == '3':
+            create_cheque_schedules(date)
     else:
         date = datetime.date(today_date.year, today_date.month, 16)
-        create_cash_schedules(date)
-        create_cheque_schedules(date)
+        if choice == '1' or choice == '3':
+            create_cash_schedules(date)
+        if choice == '2' or choice == '3':
+            create_cheque_schedules(date)
     perform_logout()

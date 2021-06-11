@@ -51,7 +51,8 @@ def get_and_update_rebate_and_default_fee(account_no, number_of_installments):
     driver.Instance.find_element_by_id(IDs.schedule_elements['rebate_default_button']).click()
     rebate_element = short_waits.until(EC.presence_of_element_located((By.ID, IDs.schedule_elements['rebate'])))
     default_element = short_waits.until(EC.presence_of_element_located((By.ID, IDs.schedule_elements['default'])))
-    rebate_default_dict = {'rebate': rebate_element.text.strip(), 'default_fee': default_element.text.strip()}
+    rebate_default_dict = {'rebate': rebate_element.text.replace(",", "").strip(),
+                           'default_fee': default_element.text.replace(",", "").strip()}
     account_no_dict = {'account_no': account_no}
     update_query("transaction", rebate_default_dict, account_no_dict)
 

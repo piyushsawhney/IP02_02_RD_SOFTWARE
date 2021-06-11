@@ -68,7 +68,7 @@ def create_workbook(type, date):
     ws = wb.active
     ws.title = "Sheet1"
     create_header(ws, type)
-    file_name_str = f'{str(date)}_{type}.xlsx'
+    file_name_str = f'files\\{str(date)}_{type}.xlsx'
     update_file_name(file_name_str)
     wb.save(file_name_str)
 

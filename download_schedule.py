@@ -74,7 +74,10 @@ def download_excel():
 
 if __name__ == '__main__':
     today_date = datetime.date.today()
-    date = datetime.date(today_date.year, today_date.month, 16).strftime("%d-%b-%Y")
+    if today_date.day <= 15:
+        date = datetime.date(today_date.year, today_date.month, 1)
+    else:
+        date = datetime.date(today_date.year, today_date.month, 16)
     schedule_list = get_schedule_details_from_db(str(datetime.date.today()))
     perform_login()
     navigate_to_reports()

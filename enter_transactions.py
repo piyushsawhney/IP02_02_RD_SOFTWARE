@@ -21,7 +21,7 @@ if __name__ == '__main__':
     if today_date.day <= 15:
         date = datetime.date(today_date.year, today_date.month, 1)
     else:
-        date = datetime.date(today_date.year, today_date.month, 1)
+        date = datetime.date(today_date.year, today_date.month, 16)
 
     for row in ws.iter_rows(min_row=2):
         insert_dict = {"account_no": row[0].value, "rd_date": str(date), "schedule_group": (int(row[4].value)),

@@ -24,6 +24,7 @@ CASH_SCHEDULE_DETAILS = "select " \
                         f"{SCHEMA}.rd_account_transactions t, {SCHEMA}.rd_master m " \
                         "where t.account_no = m.account_no and " \
                         "t.schedule_group = (scheduleGroup) and " \
+                        "t.rd_date = '(date)' and " \
                         "t.is_cash = True and t.schedule_number IS NULL " \
                         "ORDER BY t.account_no;"
 
@@ -40,6 +41,7 @@ CHEQUE_SCHEDULE_DETAILS = "select " \
                           f"{SCHEMA}.rd_account_transactions t, {SCHEMA}.rd_master m " \
                           "where t.account_no = m.account_no and " \
                           "t.schedule_group = (scheduleGroup) and " \
+                          "t.rd_date = '(date)' and " \
                           "t.is_cash = False and t.schedule_number IS NULL " \
                           "ORDER BY t.cheque_number;"
 
@@ -48,6 +50,7 @@ def create_account_dictionary(schedule_transactions, schedule):
     schedule_transactions[schedule[0]] = {}
     schedule_transactions[schedule[0]]['no_of_installment'] = schedule[2]
     schedule_transactions[schedule[0]]['card_number'] = schedule[4]
+    schedule_transactions[schedule[0]]['rd_date'] = schedule[3]
     if len(schedule) == 7:
         schedule_transactions[schedule[0]]['cheque_no'] = schedule[5]
         schedule_transactions[schedule[0]]['cheque_acc_no'] = schedule[6]
@@ -60,7 +63,7 @@ def create_cash_schedules(date):
     output = [item for t in total_schedules for item in t]
     output.sort()
     for i in output:
-        statement = CASH_SCHEDULE_DETAILS.replace("(scheduleGroup)", f"{i}")
+        statement = CASH_SCHEDULE_DETAILS.replace("(scheduleGroup)", f"{i}").replace("(date)", str(date))
         accounts_in_schedule = execute_select_query(statement)
         schedule_transactions = {}
         for schedule in accounts_in_schedule:
@@ -68,7 +71,8 @@ def create_cash_schedules(date):
         schedule_reference = select_account_and_add_to_schedule(schedule_transactions, "cash")
         schedule_reference_dict = {"schedule_number": schedule_reference, "schedule_date": str(datetime.date.today())}
         for schedule in accounts_in_schedule:
-            update_query("transaction", schedule_reference_dict, {"account_no": schedule[0]})
+            update_query("transaction", schedule_reference_dict,
+                         f"account_no = '{schedule[0]}' and rd_date = '{str(schedule[3])} and is_cash = {True}")
 
 
 def create_cheque_schedules(date):
@@ -77,7 +81,7 @@ def create_cheque_schedules(date):
     output = [item for t in total_schedules for item in t]
     output.sort()
     for i in output:
-        statement = CHEQUE_SCHEDULE_DETAILS.replace("(scheduleGroup)", f"{i}")
+        statement = CHEQUE_SCHEDULE_DETAILS.replace("(scheduleGroup)", f"{i}").replace("(date)", str(date))
         accounts_in_schedule = execute_select_query(statement)
         schedule_transactions = {}
         for schedule in accounts_in_schedule:
@@ -85,7 +89,8 @@ def create_cheque_schedules(date):
         schedule_reference = select_account_and_add_to_schedule(schedule_transactions, "cheque")
         schedule_reference_dict = {"schedule_number": schedule_reference, "schedule_date": str(datetime.date.today())}
         for schedule in accounts_in_schedule:
-            update_query("transaction", schedule_reference_dict, {"account_no": schedule[0]})
+            update_query("transaction", schedule_reference_dict,
+                         f"account_no = '{schedule[0]}' and rd_date = '{str(schedule[3])} and is_cash = {False}")
 
 
 def perform_logout():

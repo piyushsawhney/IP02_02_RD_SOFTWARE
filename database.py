@@ -57,9 +57,9 @@ def execute_select_distinct_query(table_type, attribute_list, condition=None):
 def update_query(table_type, update_dict, condition=None):
     statement = "update " + SCHEMA + "." + config_json[table_type] + f" set "
     update_values_str = ','.join("{!s}={!r}".format(k, v) for (k, v) in update_dict.items())
+    statement = statement + update_values_str
     if condition:
-        condition_str = ','.join("{!s}={!r}".format(k, v) for (k, v) in condition.items())
-    statement = statement + update_values_str + " where " + condition_str if condition is not None else "" + ";"
+        statement = statement + " where " + condition + " ;"
     cur.execute(statement)
     conn.commit()
 

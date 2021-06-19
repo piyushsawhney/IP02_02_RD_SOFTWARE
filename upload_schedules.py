@@ -43,7 +43,7 @@ def select_accounts(number_of_accounts):
     driver.Instance.find_element_by_id(IDs.schedule_elements['save_accounts']).click()
 
 
-def get_and_update_rebate_and_default_fee(account_no, number_of_installments):
+def get_and_update_rebate_and_default_fee(account_no, number_of_installments, rd_date, schedule_type):
     short_waits = WebDriverWait(driver.Instance, 10, poll_frequency=1)
     no_of_installment_element = driver.Instance.find_element_by_id(IDs.schedule_elements['no_of_installment'])
     no_of_installment_element.clear()
@@ -53,8 +53,9 @@ def get_and_update_rebate_and_default_fee(account_no, number_of_installments):
     default_element = short_waits.until(EC.presence_of_element_located((By.ID, IDs.schedule_elements['default'])))
     rebate_default_dict = {'rebate': rebate_element.text.replace(",", "").strip(),
                            'default_fee': default_element.text.replace(",", "").strip()}
-    account_no_dict = {'account_no': account_no}
-    update_query("transaction", rebate_default_dict, account_no_dict)
+    is_cash = True if schedule_type.lower() == 'cash' else False
+    update_query("transaction", rebate_default_dict,
+                 f"account_no = '{account_no}' and rd_date = '{str(rd_date)}' and is_cash = {is_cash}")
 
 
 def add_details_for_transaction(card_number, type, cheque_no=None, bank_account_no=None):
@@ -79,7 +80,7 @@ def navigate_to_page(page_number):
 
 def submit_schedule():
     short_waits = WebDriverWait(driver.Instance, 10, poll_frequency=1)
-    driver.Instance.find_element_by_id(IDs.schedule_elements['pay_schedule']).click()
+    # driver.Instance.find_element_by_id(IDs.schedule_elements['pay_schedule']).click()
     ref_no_text = short_waits.until(
         EC.presence_of_element_located((By.XPATH, xpaths.schedule_xpath['reference_no']))).text.strip()
     print(ref_no_text)
@@ -110,7 +111,8 @@ def select_account_and_add_to_schedule(schedule_details, schedule_type):
         radio_button_xpath = xpaths.account_details['radio_button'].replace("{value}", str(i))
         driver.Instance.find_element_by_xpath(radio_button_xpath).click()
 
-        get_and_update_rebate_and_default_fee(account_no, schedule_details[account_no]['no_of_installment'])
+        get_and_update_rebate_and_default_fee(account_no, schedule_details[account_no]['no_of_installment'],
+                                              schedule_details[account_no]['rd_date'], schedule_type)
         cheque_no = schedule_details[account_no]['cheque_no'] if 'cheque_no' in schedule_details[
             account_no].keys() else None
         cheque_acc_no = schedule_details[account_no]['cheque_acc_no'] if 'cheque_acc_no' in schedule_details[

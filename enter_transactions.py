@@ -28,5 +28,5 @@ if __name__ == '__main__':
                        "is_cash": bool(row[5].value), "no_of_installments": int(row[2].value)}
         if row[6].value:
             insert_dict['cheque_number'] = row[6].value
-            insert_dict['is_cash']: False
+            insert_dict['is_cash'] = False
         enter_into_transaction_table(insert_dict)

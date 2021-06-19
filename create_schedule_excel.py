@@ -27,6 +27,7 @@ CASH_SCHEDULE_DETAILS = "select " \
                         f"{SCHEMA}.rd_account_transactions t, {SCHEMA}.rd_master m " \
                         "where t.account_no = m.account_no and " \
                         "t.schedule_group = (scheduleGroup) and " \
+                        "t.rd_date = '(date)' and " \
                         "t.is_cash = True and t.schedule_number IS NULL " \
                         "ORDER BY t.account_no;"
 
@@ -47,6 +48,7 @@ CHEQUE_SCHEDULE_DETAILS = "select " \
                           f"{SCHEMA}.rd_account_transactions t, {SCHEMA}.rd_master m " \
                           "where t.account_no = m.account_no and " \
                           "t.schedule_group = (scheduleGroup) and " \
+                          "t.rd_date = '(date)' and " \
                           "t.is_cash = False and t.schedule_number IS NULL " \
                           "ORDER BY t.cheque_number;"
 

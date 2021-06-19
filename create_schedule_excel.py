@@ -114,7 +114,7 @@ def create_cash_schedules(date):
     output = [item for t in total_schedules for item in t]
     output.sort()
     for i in output:
-        statement = CASH_SCHEDULE_DETAILS.replace("(scheduleGroup)", f"{i}")
+        statement = CASH_SCHEDULE_DETAILS.replace("(scheduleGroup)", f"{i}").replace("(date)", str(date))
         accounts_in_schedule = execute_select_query(statement)
         for schedule in accounts_in_schedule:
             create_sheet(i, schedule)
@@ -126,7 +126,7 @@ def create_cheque_schedules(date):
     output = [item for t in total_schedules for item in t]
     output.sort()
     for i in output:
-        statement = CHEQUE_SCHEDULE_DETAILS.replace("(scheduleGroup)", f"{i}")
+        statement = CHEQUE_SCHEDULE_DETAILS.replace("(scheduleGroup)", f"{i}").replace("(date)", str(date))
         accounts_in_schedule = execute_select_query(statement)
         for schedule in accounts_in_schedule:
             create_sheet(i, schedule)

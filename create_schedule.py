@@ -72,7 +72,7 @@ def create_cash_schedules(date):
         schedule_reference_dict = {"schedule_number": schedule_reference, "schedule_date": str(datetime.date.today())}
         for schedule in accounts_in_schedule:
             update_query("transaction", schedule_reference_dict,
-                         f"account_no = '{schedule[0]}' and rd_date = '{str(schedule[3])} and is_cash = {True}")
+                         f"account_no = '{schedule[0]}' and rd_date = '{str(schedule[3])}' and is_cash = {True}")
 
 
 def create_cheque_schedules(date):
@@ -90,7 +90,7 @@ def create_cheque_schedules(date):
         schedule_reference_dict = {"schedule_number": schedule_reference, "schedule_date": str(datetime.date.today())}
         for schedule in accounts_in_schedule:
             update_query("transaction", schedule_reference_dict,
-                         f"account_no = '{schedule[0]}' and rd_date = '{str(schedule[3])} and is_cash = {False}")
+                         f"account_no = '{schedule[0]}' and rd_date = '{str(schedule[3])}' and is_cash = {False}")
 
 
 def perform_logout():

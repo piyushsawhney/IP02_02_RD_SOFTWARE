@@ -80,7 +80,7 @@ def navigate_to_page(page_number):
 
 def submit_schedule():
     short_waits = WebDriverWait(driver.Instance, 10, poll_frequency=1)
-    # driver.Instance.find_element_by_id(IDs.schedule_elements['pay_schedule']).click()
+    driver.Instance.find_element_by_id(IDs.schedule_elements['pay_schedule']).click()
     ref_no_text = short_waits.until(
         EC.presence_of_element_located((By.XPATH, xpaths.schedule_xpath['reference_no']))).text.strip()
     print(ref_no_text)

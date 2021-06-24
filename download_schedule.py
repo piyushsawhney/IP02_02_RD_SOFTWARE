@@ -76,13 +76,18 @@ if __name__ == '__main__':
     today_date = datetime.date.today()
     if today_date.day <= 15:
         date = datetime.date(today_date.year, today_date.month, 1)
+        date = date - datetime.timedelta(days=1)
+        date = date.strftime("%d-%b-%Y")
     else:
         date = datetime.date(today_date.year, today_date.month, 16)
+        date = date - datetime.timedelta(days=1)
+        date = date.strftime("%d-%b-%Y")
+
     schedule_list = get_schedule_details_from_db(str(datetime.date.today()))
     perform_login()
     navigate_to_reports()
     # schedule_list = [(' ',), (' ',)]
     for schedule_number in schedule_list:
-        search_schedule(schedule_number[0], date)
+        search_schedule(schedule_number[0], str(date))
         download_excel()
     perform_logout()

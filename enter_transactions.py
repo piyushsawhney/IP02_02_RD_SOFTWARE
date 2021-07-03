@@ -29,4 +29,5 @@ if __name__ == '__main__':
         if row[6].value:
             insert_dict['cheque_number'] = row[6].value
             insert_dict['is_cash'] = False
+        print(insert_dict)
         enter_into_transaction_table(insert_dict)

@@ -68,11 +68,11 @@ def create_cash_schedules(date):
         schedule_transactions = {}
         for schedule in accounts_in_schedule:
             schedule_transactions = create_account_dictionary(schedule_transactions, schedule)
-        schedule_reference = select_account_and_add_to_schedule(schedule_transactions, "cash")
+        schedule_reference = select_account_and_add_to_schedule(schedule_transactions, "cash", i)
         schedule_reference_dict = {"schedule_number": schedule_reference, "schedule_date": str(datetime.date.today())}
         for schedule in accounts_in_schedule:
             update_query("transaction", schedule_reference_dict,
-                         f"account_no = '{schedule[0]}' and rd_date = '{str(schedule[3])}' and is_cash = {True}")
+                         f"account_no = '{schedule[0]}' and rd_date = '{str(schedule[3])}' and is_cash = {True} and schedule_group = {i}")
 
 
 def create_cheque_schedules(date):
@@ -86,11 +86,11 @@ def create_cheque_schedules(date):
         schedule_transactions = {}
         for schedule in accounts_in_schedule:
             schedule_transactions = create_account_dictionary(schedule_transactions, schedule)
-        schedule_reference = select_account_and_add_to_schedule(schedule_transactions, "cheque")
+        schedule_reference = select_account_and_add_to_schedule(schedule_transactions, "cheque", i)
         schedule_reference_dict = {"schedule_number": schedule_reference, "schedule_date": str(datetime.date.today())}
         for schedule in accounts_in_schedule:
             update_query("transaction", schedule_reference_dict,
-                         f"account_no = '{schedule[0]}' and rd_date = '{str(schedule[3])}' and is_cash = {False}")
+                         f"account_no = '{schedule[0]}' and rd_date = '{str(schedule[3])}' and is_cash = {False} and schedule_group = {i}")
 
 
 def perform_logout():

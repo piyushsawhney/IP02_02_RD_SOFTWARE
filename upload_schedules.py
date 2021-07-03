@@ -43,7 +43,7 @@ def select_accounts(number_of_accounts):
     driver.Instance.find_element_by_id(IDs.schedule_elements['save_accounts']).click()
 
 
-def get_and_update_rebate_and_default_fee(account_no, number_of_installments, rd_date, schedule_type):
+def get_and_update_rebate_and_default_fee(account_no, number_of_installments, rd_date, schedule_type, schedule_number):
     short_waits = WebDriverWait(driver.Instance, 10, poll_frequency=1)
     no_of_installment_element = driver.Instance.find_element_by_id(IDs.schedule_elements['no_of_installment'])
     no_of_installment_element.clear()
@@ -55,7 +55,7 @@ def get_and_update_rebate_and_default_fee(account_no, number_of_installments, rd
                            'default_fee': default_element.text.replace(",", "").strip()}
     is_cash = True if schedule_type.lower() == 'cash' else False
     update_query("transaction", rebate_default_dict,
-                 f"account_no = '{account_no}' and rd_date = '{str(rd_date)}' and is_cash = {is_cash}")
+                 f"account_no = '{account_no}' and rd_date = '{str(rd_date)}' and is_cash = {is_cash} and schedule_group = {schedule_number}")
 
 
 def add_details_for_transaction(card_number, type, cheque_no=None, bank_account_no=None):
@@ -90,7 +90,7 @@ def submit_schedule():
     return reference_no
 
 
-def select_account_and_add_to_schedule(schedule_details, schedule_type):
+def select_account_and_add_to_schedule(schedule_details, schedule_type, schedule_number):
     if not driver.Instance:
         perform_login()
         navigate_to_account()
@@ -112,7 +112,7 @@ def select_account_and_add_to_schedule(schedule_details, schedule_type):
         driver.Instance.find_element_by_xpath(radio_button_xpath).click()
 
         get_and_update_rebate_and_default_fee(account_no, schedule_details[account_no]['no_of_installment'],
-                                              schedule_details[account_no]['rd_date'], schedule_type)
+                                              schedule_details[account_no]['rd_date'], schedule_type, schedule_number)
         cheque_no = schedule_details[account_no]['cheque_no'] if 'cheque_no' in schedule_details[
             account_no].keys() else None
         cheque_acc_no = schedule_details[account_no]['cheque_acc_no'] if 'cheque_acc_no' in schedule_details[

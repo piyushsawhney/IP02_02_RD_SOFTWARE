@@ -60,6 +60,7 @@ def update_query(table_type, update_dict, condition=None):
     statement = statement + update_values_str
     if condition:
         statement = statement + " where " + condition + " ;"
+    # print(cur.mogrify(statement))
     cur.execute(statement)
     conn.commit()
 

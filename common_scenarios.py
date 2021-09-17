@@ -1,4 +1,5 @@
 import json
+import time
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
@@ -21,6 +22,9 @@ class LoginPage:
         password = config['password']
         driver.Instance.find_element_by_id(IDs.login_elements['username']).send_keys(username)
         driver.Instance.find_element_by_id(IDs.login_elements['password']).send_keys(password)
+        for i in range(10):
+            # text = driver.Instance.find_element_by_id(IDs.login_elements['captcha_box']).text
+            time.sleep(1)
         driver.Instance.find_element_by_id(IDs.login_elements['login']).click()
 
     @staticmethod

@@ -5,6 +5,7 @@ login_elements['password'] = 'AuthenticationFG.ACCESS_CODE'
 login_elements['login'] = 'VALIDATE_RM_PLUS_CREDENTIALS_CATCHA_DISABLED'
 login_elements['logout_1'] = 'HREF_Logout'
 login_elements['logout_2'] = 'LOG_OUT'
+login_elements['captcha_box'] = 'AuthenticationFG.VERIFICATION_CODE'
 
 navigation_elements = {}
 navigation_elements['accounts'] = 'Accounts'

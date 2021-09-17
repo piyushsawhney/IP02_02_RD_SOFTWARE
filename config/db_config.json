@@ -1,6 +1,7 @@
 {
   "schema": "po_data",
   "master": "rd_master",
+  "client": "rd_client_details",
   "transaction": "rd_account_transactions",
   "file_name": "transactions.xlsx"
 }

@@ -3,6 +3,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
 import processor.app_config.ids as IDs
+from processor.app_config import xpaths as XPATH
 from processor.app_config.db_sql import GET_ACCOUNT_ASLAAS, UPDATE_ACCOUNT_ASLAAS
 from processor.db.database import execute_select_query, execute_statement
 from processor.portal import driver
@@ -25,6 +26,12 @@ class AslaasProcessor:
         element.click()
         element = short_waits.until(EC.element_to_be_clickable((By.ID, IDs.aslaas_update['add'])))
         element.click()
+        status = short_waits.until(
+            EC.presence_of_element_located((By.XPATH, XPATH.schedule_xpath['reference_no']))).text.strip()
+        if 'successfully' in status.lower():
+            return True
+        else:
+            return False
 
     @staticmethod
     def update_card_update_status(account_no):
@@ -34,7 +41,9 @@ class AslaasProcessor:
     def process_aslaas_numbers():
         account_aslaas_no_list = AslaasProcessor.get_non_updated_cards()
         if len(account_aslaas_no_list) > 0:
+            print(account_aslaas_no_list)
             PortalNavigation.navigate_to_aslaas()
             for aslaas_account_no in account_aslaas_no_list:
-                AslaasProcessor.update_card_on_portal(aslaas_account_no[0], aslaas_account_no[1])
-                AslaasProcessor.update_card_update_status(aslaas_account_no[0])
+                if AslaasProcessor.update_card_on_portal(aslaas_account_no[0], aslaas_account_no[1]):
+                    print(aslaas_account_no)
+                    AslaasProcessor.update_card_update_status(aslaas_account_no[0])

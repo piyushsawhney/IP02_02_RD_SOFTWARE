@@ -62,7 +62,6 @@ class RdMaster:
 
                 driver.Instance.find_element_by_id(id_of_account).click()
                 RdMaster.update_account_details()
-                # update_to_db(create_row(driver))
                 driver.Instance.find_element_by_id(IDs.navigation_elements['back_button']).click()
                 start = start + 1
             counter = start

@@ -35,13 +35,19 @@ GET_CHEQUE_ACCOUNT_TRANSACTION_DETAILS = "select t.account_no,m.investor_name,t.
 GET_ACCOUNT_ASLAAS = "select m.account_no, case  when (m.is_updated = false and m.is_extended = true) " \
                      "then m.new_card_number when(m.is_updated = false and m.is_extended = false) then " \
                      f"m.card_number else m.card_number end as card_number from po_data.rd_master m " \
-                     "where(m.card_number is not null and m.card_number != '') limit 1;"
+                     "where (m.card_number is not null and m.card_number != '') and m.is_updated = false;"
 
 UPDATE_ACCOUNT_ASLAAS = "UPDATE po_data.rd_master SET is_updated=%s where account_no=%s;"
 
 UPDATE_ACCOUNT_TRANSACTIONS = "UPDATE po_data.rd_account_transactions SET schedule_date=%s, schedule_number=%s " \
                               "WHERE rd_date=%s and account_no=%s and is_cash=%s and schedule_group=%s and " \
-                              "no_of_installments=%s"
+                              "no_of_installments=%s;"
+ADD_ACCOUNT_TRANSACTIONS = "INSERT INTO po_data.rd_account_transactions (rd_date,account_no, is_cash, " \
+                           "no_of_installments, schedule_group,cheque_number) VALUES (%s,%s,%s,%s,%s,%s) " \
+                           "ON CONFLICT (rd_date,account_no, is_cash,schedule_group) DO NOTHING;"
+
+UPDATE_RD_CLIENTS = "UPDATE po_data.rd_client_details SET card_number=%s,extended_card_number=%s, " \
+                    "bank_account_no=%s where rd_account_no=%s;"
 
 UPSERT_MASTER = "INSERT INTO po_data.rd_master " \
                 "(account_no, investor_name, account_opening_date, denomination, total_deposit_amount, " \

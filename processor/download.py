@@ -20,6 +20,6 @@ if __name__ == '__main__':
         LoginPage.Login()
         PortalNavigation.navigate_to_reports()
         for schedule in schedule_list:
-            RdDownloadSchedules.search_schedule(schedule[0], str(today_date))
+            RdDownloadSchedules.search_schedule(schedule[0], today_date)
             RdDownloadSchedules.download_schedule_excel()
         LoginPage.logout()

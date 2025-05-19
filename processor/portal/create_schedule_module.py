@@ -1,6 +1,9 @@
+import time
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
+
 from processor.app_config import ids as IDs
 from processor.app_config import xpaths as XPATH
 from processor.app_config.db_sql import UPDATE_REBATE_DEFAULT
@@ -33,20 +36,21 @@ class RdSchedules:
     @staticmethod
     def update_account(account_list, is_cash, schedule_group):
         for i in range(len(account_list)):
-            short_waits = WebDriverWait(driver.Instance, 10, poll_frequency=1)
+            short_waits = WebDriverWait(driver.Instance, 45, poll_frequency=2)
 
             element_id_string = IDs.schedule_update_elements['account_no'] + f"[{i}]"
-            account_no = short_waits.until(EC.presence_of_element_located((By.ID, element_id_string))).text.strip()
+            account_no = short_waits.until(EC.visibility_of_element_located((By.ID, element_id_string))).text.strip()
             assert account_no == account_list[i][0]
             radio_button_xpath = XPATH.account_details['radio_button'].replace("{value}", str(i))
             driver.Instance.find_element_by_xpath(radio_button_xpath).click()
-
             # Rebate and Default Calculation
             no_of_installment_element = driver.Instance.find_element_by_id(IDs.schedule_elements['no_of_installment'])
             no_of_installment_element.clear()
             no_of_installment_element.send_keys(account_list[i][1])
             driver.Instance.find_element_by_id(IDs.schedule_elements['rebate_default_button']).click()
-            rebate_element = short_waits.until(EC.presence_of_element_located((By.ID, IDs.schedule_elements['rebate'])))
+            time.sleep(1)
+            rebate_element = short_waits.until(
+                EC.presence_of_element_located((By.ID, IDs.schedule_elements['rebate'])))
             default_element = short_waits.until(
                 EC.presence_of_element_located((By.ID, IDs.schedule_elements['default'])))
             values = (
@@ -64,42 +68,45 @@ class RdSchedules:
                 cheque_acc_no_element.clear()
                 cheque_acc_no_element.send_keys(account_list[i][4])
             driver.Instance.find_element_by_id(IDs.schedule_elements['save_modification']).click()
+            time.sleep(1)
             RdSchedules.verify_account(i, len(account_list))
 
     @staticmethod
     def navigate_to_page(page_number):
+        short_waits = WebDriverWait(driver.Instance, 30, poll_frequency=5)
+        short_waits.until(
+            EC.visibility_of_element_located((By.ID, IDs.navigation_elements['add_account_page_number'])))
         driver.Instance.find_element_by_id(IDs.navigation_elements['add_account_page_number']).send_keys(
             str(page_number))
         driver.Instance.find_element_by_id(IDs.navigation_elements['add_account_go']).click()
 
     @staticmethod
     def verify_account(i, number_of_accounts):
-        short_waits = WebDriverWait(driver.Instance, 10, poll_frequency=1)
-
+        short_waits = WebDriverWait(driver.Instance, 30, poll_frequency=5)
         page_to_go = int(((i + 1) / 10) + 1)
 
         element_id_string = IDs.schedule_elements['modified_status'] + f"[{i}]"
         if i <= 9:
             assert short_waits.until(
-                EC.presence_of_element_located((By.ID, element_id_string))).text.strip().lower() == 'yes'
+                EC.visibility_of_element_located((By.ID, element_id_string))).text.strip().lower() == 'yes'
             if i == 9 and number_of_accounts != 10:
                 RdSchedules.navigate_to_page(page_to_go)
         elif i % 10 == 9:
             RdSchedules.navigate_to_page(page_to_go - 1)
             assert short_waits.until(
-                EC.presence_of_element_located((By.ID, element_id_string))).text.strip().lower() == 'yes'
+                EC.visibility_of_element_located((By.ID, element_id_string))).text.strip().lower() == 'yes'
             RdSchedules.navigate_to_page(page_to_go)
         else:
             RdSchedules.navigate_to_page(page_to_go)
             assert short_waits.until(
-                EC.presence_of_element_located((By.ID, element_id_string))).text.strip().lower() == 'yes'
+                EC.visibility_of_element_located((By.ID, element_id_string))).text.strip().lower() == 'yes'
 
     @staticmethod
     def submit_schedule():
-        short_waits = WebDriverWait(driver.Instance, 10, poll_frequency=1)
+        short_waits = WebDriverWait(driver.Instance, 15, poll_frequency=2)
         driver.Instance.find_element_by_id(IDs.schedule_elements['pay_schedule']).click()
         ref_no_text = short_waits.until(
-            EC.presence_of_element_located((By.XPATH, XPATH.schedule_xpath['reference_no']))).text.strip()
+            EC.visibility_of_element_located((By.XPATH, XPATH.schedule_xpath['reference_no']))).text.strip()
         print(ref_no_text)
         reference_no = ref_no_text.split(".")[1]
         reference_no = reference_no[reference_no.rindex(" "):].strip()

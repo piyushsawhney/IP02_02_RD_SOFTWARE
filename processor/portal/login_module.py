@@ -32,6 +32,6 @@ class LoginPage:
 
     @staticmethod
     def logout():
-        driver.Instance.find_element_by_id(IDs.login_elements['logout_1']).click()
-        driver.Instance.find_element_by_id(IDs.login_elements['logout_2']).click()
+        driver.Instance.find_element_by_id(IDs.login_elements['HREF_Logout']).click()
+        driver.Instance.find_element_by_id(IDs.login_elements['LOG_OUT']).click()
         driver.CloseDriver()

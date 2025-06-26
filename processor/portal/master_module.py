@@ -58,7 +58,7 @@ class RdMaster:
 
     @staticmethod
     def process_accounts():
-        long_waits = WebDriverWait(driver.Instance, 45, poll_frequency=5)
+        long_waits = WebDriverWait(driver.Instance, 60, poll_frequency=5)
         start = 0
         counter = 0
         while True:

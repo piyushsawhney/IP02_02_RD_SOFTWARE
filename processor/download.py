@@ -1,5 +1,9 @@
 import datetime
+import time
 
+#
+# from processor.app_config.db_sql import GET_SCHEDULE_NUMBERS
+# from processor.db.database import execute_select_query
 from processor.app_config.db_sql import GET_SCHEDULE_NUMBERS
 from processor.db.database import execute_select_query
 from processor.portal.download_schedule_module import RdDownloadSchedules
@@ -16,10 +20,12 @@ class ScheduleDownloader:
 if __name__ == '__main__':
     today_date = datetime.date.today()
     schedule_list = ScheduleDownloader.get_schedule_details_from_db(today_date)
+    # schedule_list = [('C208980224'),]
     if schedule_list:
         LoginPage.Login()
         PortalNavigation.navigate_to_reports()
         for schedule in schedule_list:
             RdDownloadSchedules.search_schedule(schedule[0], today_date)
+            time.sleep(1)
             RdDownloadSchedules.download_schedule_excel()
         LoginPage.logout()

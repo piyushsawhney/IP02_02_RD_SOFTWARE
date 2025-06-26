@@ -38,7 +38,7 @@ class RdDownloadSchedules:
 
     @staticmethod
     def download_schedule_excel():
-        short_waits = WebDriverWait(driver.Instance, 10, poll_frequency=1)
+        short_waits = WebDriverWait(driver.Instance, 20, poll_frequency=5)
         element = short_waits.until(EC.element_to_be_clickable((By.XPATH, XPATH.list_download['output_format'])))
         element.click()
         element = short_waits.until(EC.element_to_be_clickable((By.ID, IDs.schedule_download['download_file'])))

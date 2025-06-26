@@ -27,6 +27,8 @@ class RdSchedules:
         number_of_accounts = len(account_list)
         for i in range(1, number_of_accounts + 1):
             element_id = IDs.schedule_elements['account_no_check_box'] + f"[{i - 1}]"
+            short_waits = WebDriverWait(driver.Instance, 45, poll_frequency=2)
+            short_waits.until(EC.visibility_of_element_located((By.ID, element_id)))
             driver.Instance.find_element_by_id(element_id).click()
             if not i == 0 and i % 10 == 0 and number_of_accounts != 10:
                 driver.Instance.find_element_by_id(IDs.navigation_elements['next_select_account']).click()
